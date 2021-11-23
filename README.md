@@ -1,7 +1,7 @@
 # Drupal codeception demo
 
 The purpose of this project demonstrate test capabilities of Codecetion
-in Drupal CMS
+in Drupal CMS 
 
 ## Run local env with Docksal
 
@@ -18,7 +18,7 @@ in Drupal CMS
 
 2. Enter the newly created project directory
    ```sh
-   cd drupal_codeception_demo
+   cd drupal_day_codeception_example
    ```
 
 3. Start docksal environment
@@ -40,5 +40,5 @@ in Drupal CMS
 ## Run tests
 
    ```sh
-   php vendor/bin/codecept run acceptance,unit --html
+   fin test
    ```
