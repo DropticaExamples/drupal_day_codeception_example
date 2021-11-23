@@ -1,0 +1,52 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: 'ubuntu-20.04'
+    container:
+      image: drupal:8-php7.4
+      options: --network-alias drupal
+    env:
+      COMPOSER_MEMORY_LIMIT: -1
+      VIRTUAL_HOST: "drupal"
+
+    services:
+      browser:
+        image: selenium/standalone-chrome
+
+    steps:
+      - name: Prepare
+        run: apt update; apt install -qq -y git
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update composer
+        run: composer --verbose self-update --2
+
+      - name: Dump composer verson
+        run: composer --version
+
+      - name: Validate composer.json
+        run: composer --verbose validate
+
+      - name: Install dependencies
+        run: composer --verbose install
+
+      - run: ./vendor/bin/drush site-install --verbose --yes --db-url=sqlite://tmp/site.sqlite; ./vendor/bin/drush en media --yes
+
+      - run: ./vendor/bin/drush runserver $VIRTUAL_HOST:80 &
+
+      - run: until curl -s $VIRTUAL_HOST; do true; done > /dev/null
+
+      - name: Run codeception tests.
+        run: ./vendor/bin/codecept run acceptance --steps
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Screenshots
+          path: tests/_output/debug
+            

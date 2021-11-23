@@ -1,0 +1,42 @@
+# Codeception Test Suite Configuration
+#
+# Suite for acceptance tests.
+# Perform tests in browser using the WebDriver or PhpBrowser.
+# If you need both WebDriver and PHPBrowser tests - create a separate suite.
+
+actor: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver:
+              browser: chrome
+              host: browser
+              url: "http://%VIRTUAL_HOST%"
+        - DrupalBootstrap:
+              site_path: 'sites/default'
+              http_host: "%VIRTUAL_HOST%"
+        - DrupalEntity:
+              cleanup_test: true
+              cleanup_failed: false
+              cleanup_suite: true
+              route_entities:
+                  - node
+                  - taxonomy_term
+        - DrupalWatchdog:
+            enabled: true
+            level: 'ERROR'
+            channels:
+              my_module: 'NOTICE'
+              php: 'WARNING'
+        - DrupalUser:
+              default_role: 'authenticated'
+              driver: 'WebDriver'
+              drush: "../vendor/bin/drush"
+              cleanup_test: true
+              cleanup_failed: false
+              cleanup_suite: true
+        - DrupalAcceptance
+        - DrupalDrush
+        - \Helper\Acceptance
+        - \Helper\DrupalHelper
+step_decorators:
+    - \Codeception\Step\ConditionalAssertion
